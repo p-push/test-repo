@@ -24,6 +24,11 @@ def index():
         
         elements = driver.find_elements_by_xpath('//a[@data-analytics-label="biz-name"]')
         # take the first one for simplicity
+        
+        if len(elements) == 0:
+            bottle.response.headers['Access-Control-Allow-Origin'] = '*'
+            return json.dumps(dict(reviews=[], title=''))
+            
         e = elements[0]
         title = e.text
         
@@ -39,25 +44,13 @@ def index():
         data = []
         for review in reviews:
             review_text = review.text
-            review_markup = markupsafe.Markup(review_text).replace("\n", "<br/>\n")
+            review_markup = str(markupsafe.Markup(review_text)).replace("\n", "<br/>\n")
             data.append(review_markup)
         
-        return json.dumps(dict(reviews=data))
+        bottle.response.headers['Access-Control-Allow-Origin'] = '*'
+        return json.dumps(dict(reviews=data, title=title))
     
     finally:
         driver.quit()
         
-    import pdb;pdb.set_trace()
-    
-    assert "Python" in driver.title
-    elem = driver.find_element_by_name("q")
-    elem.clear()
-    elem.send_keys("pycon")
-    elem.send_keys(Keys.RETURN)
-    assert "No results found." not in driver.page_source
-    driver.close()
-
-    import pdb;pdb.set_trace()
-    return template('<b>Hello {{name}}</b>!', name=name)
-
 run(host='localhost', port=8080, reloader=True)

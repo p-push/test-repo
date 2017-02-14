@@ -1,31 +1,33 @@
-//document.write(data.slice(0,10).join("<br/ >"))
-
 class Table  extends React.Component {
   constructor() {
     super()
-    this.state = {q: ''}
+    this.state = {q: '', title: '', reviews: []}
   }
 
   render() {
     return   <div>
+  <div>
+  Pizzeria: <input onChange={this.onchange.bind(this)} value={this.q}/>
+  </div>
+    {this.state.title && <h1>{this.state.title}</h1>}
     <table><tbody>
-  {_.filter(data, this.f.bind(this)).slice(0, 10).map(function(row) {
-    return <tr key={row[0]}>
-      <td>{row[0]}</td>
-      <td>{row[1]}</td>
-      <td>{row[2]}</td>
-      <td>{row[3]}</td>
+  {this.state.reviews.map(function(row) {
+    return <tr key={row}>
+      <td dangerouslySetInnerHTML={{__html:row}}></td>
     </tr>
   })}
   </tbody></table>
-  <div>
-  <input onChange={this.onchange.bind(this)} value={this.q}/>
-  </div>
   </div>
   }
 
   onchange(e) {
     this.setState({q: e.target.value})
+    fetch('http://localhost:8080/search?q=' + e.target.value).then((response) => {
+      return response.json()
+    }).then((payload) => {
+      this.setState({reviews: payload.reviews, title: payload.title})
+    })
+    
   }
 
   f(row) {

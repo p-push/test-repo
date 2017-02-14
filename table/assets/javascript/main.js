@@ -8,8 +8,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-//document.write(data.slice(0,10).join("<br/ >"))
-
 var Table = function (_React$Component) {
   _inherits(Table, _React$Component);
 
@@ -18,7 +16,7 @@ var Table = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Table.__proto__ || Object.getPrototypeOf(Table)).call(this));
 
-    _this.state = { q: '' };
+    _this.state = { q: '', title: '', reviews: [] };
     return _this;
   }
 
@@ -29,50 +27,44 @@ var Table = function (_React$Component) {
         'div',
         null,
         React.createElement(
+          'div',
+          null,
+          'Pizzeria: ',
+          React.createElement('input', { onChange: this.onchange.bind(this), value: this.q })
+        ),
+        this.state.title && React.createElement(
+          'h1',
+          null,
+          this.state.title
+        ),
+        React.createElement(
           'table',
           null,
           React.createElement(
             'tbody',
             null,
-            _.filter(data, this.f.bind(this)).slice(0, 10).map(function (row) {
+            this.state.reviews.map(function (row) {
               return React.createElement(
                 'tr',
-                { key: row[0] },
-                React.createElement(
-                  'td',
-                  null,
-                  row[0]
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  row[1]
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  row[2]
-                ),
-                React.createElement(
-                  'td',
-                  null,
-                  row[3]
-                )
+                { key: row },
+                React.createElement('td', { dangerouslySetInnerHTML: { __html: row } })
               );
             })
           )
-        ),
-        React.createElement(
-          'div',
-          null,
-          React.createElement('input', { onChange: this.onchange.bind(this), value: this.q })
         )
       );
     }
   }, {
     key: 'onchange',
     value: function onchange(e) {
+      var _this2 = this;
+
       this.setState({ q: e.target.value });
+      fetch('http://localhost:8080/search?q=' + e.target.value).then(function (response) {
+        return response.json();
+      }).then(function (payload) {
+        _this2.setState({ reviews: payload.reviews, title: payload.title });
+      });
     }
   }, {
     key: 'f',

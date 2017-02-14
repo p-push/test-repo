@@ -1,0 +1,10 @@
+Keep in mind that this is prototype-quality code!
+
+Run pip install -r requirements.txt
+Install geckodriver
+Run npm install
+Run python server.py
+Open index.html in browser
+
+Server takes a long time to respond, type slowly!
+Strongly suggest to paste an entire query at once.
